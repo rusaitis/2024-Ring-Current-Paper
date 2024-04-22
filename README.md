@@ -1,11 +1,12 @@
-# Analysis Software for Rusaitis et al. (2024)
+# Analysis Software for Rusaitis et al. (2024) Ring Current Paper
 
 ## Contents
 
-* `pypic` - analysis/plotting code
-* `figures` - default figure export location
-* `DATA` - default data location
-* `configs` - configuration file for `iPic3D` (EcSIM). https://github.com/CmPA/iPic3D
+* `pypic/` - analysis/plotting code
+* `figures/` - default figure location
+* `DATA/` - default data location
+* `Figure[1-13].py` - scripts for the figures
+* `configs/` - configuration file for [`iPic3D`](https://github.com/CmPA/iPic3D) (EcSIM).
 
 ## Setting up a Virtual Environment
 
@@ -19,9 +20,7 @@ To activate the enironment, run `conda activate pypic-env`.
 
 ### PiP
 
-If using built-in `pip`, simply run `pip install -r requirements.txt`.
-
-conda create -n py39 python=3.9 scipy matplotlib pandas scikit-image colorcet h5py
+If using the built-in `pip`, simply run `pip install -r requirements.txt`.
 
 
 ## Copy the Data
@@ -30,4 +29,4 @@ Place downloaded data from a repository in the `DATA` folder, or provide a custo
 
 ## Execute the Code
 
-To execute the code, simply run `python Figure1.py` etc.
+To execute the code, simply run `python Figure1.py` ...
