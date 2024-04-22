@@ -1,0 +1,25 @@
+# macOS system files
+.DS_Store
+._*
+.AppleDouble
+
+# macOS folder metadata
+.Spotlight-V100/
+.Trashes/
+.fseventsd/
+
+# Obsidian
+.obsidian
+*.json
+*.css
+plugins
+*.js
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# DATA folder
+DATA/
