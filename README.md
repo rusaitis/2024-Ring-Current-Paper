@@ -1,5 +1,7 @@
 # Analysis Software for Rusaitis et al. (2024) Ring Current Paper
 
+![Figure 10](https://github.com/rusaitis/2024-Ring-Current-Paper/figures/figure10.pdf)
+
 ## Contents
 
 * `pypic/` - analysis/plotting code
