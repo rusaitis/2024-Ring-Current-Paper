@@ -1,6 +1,7 @@
 # Analysis Software for Rusaitis et al. (2024) Ring Current Paper
 
-![Figure 10](https://github.com/rusaitis/2024-Ring-Current-Paper/figures/figure10.pdf)
+![figure10.pdf](https://github.com/rusaitis/2024-Ring-Current-Paper/files/15066847/figure10.pdf)
+
 
 ## Contents
 
