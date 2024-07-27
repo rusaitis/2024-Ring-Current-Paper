@@ -13,8 +13,8 @@ from pypic.fieldline import fieldline
 # --- PLOT SETTINGS
 show_only = False
 publication_quality = True
-dark_mode = False
-transparent = False
+dark_mode = True
+transparent = True
 plot_progress_bar = True
 LaTeX = True
 clip_on = False
@@ -83,8 +83,8 @@ q_picks = [
         ]
 
 # --- Chosen ion IDs for the 2024 ring current paper
-# i_pick = 6 # ion in Figure 11
-i_pick = 15 # ion in Figure 12
+i_pick = 6 # ion in Figure 11
+# i_pick = 15 # ion in Figure 12
 # i_pick = 29 # ion in Figure 13 (df_paper_205k_all_124368_fields.h5)
 
 
@@ -92,15 +92,13 @@ sim = pypic.ipic3D()
 # cycle = 10000
 cycle = 100000 # Figure 9 Panels c,d
 cycle = 155000 # Figure 9 Panels e,f
-# cycles_iter = [40000, 151500, 202500] # Ion 6 *
-# cycles_plot_field = [40000, 151500] # Ion 6 *
+cycles_iter = [40000, 151500, 202500] # Ion 6 *
+cycles_plot_field = [40000, 151500] # Ion 6 *
 
-cycles_iter = [76000, 138000, 165000, 202500] # Ion 15 *
-cycles_plot_field = [76000, 138000, 165000] # Ion 15 *
+# cycles_iter = [76000, 138000, 165000, 202500] # Ion 15 *
 # cycles_iter = [106000, 142500, 202500] # Ion 29 *
-# cycles_iter = [142500, 202500] # Ion 29 *
 
-cycle = 202500 # Figure 9 Panels g,h
+cycle = 202500
 selection = pypic.Selection(sim,
                             species = 1,
                             cycle = cycle,
@@ -113,8 +111,8 @@ selection.data_dir = os.path.join(os.path.expanduser('~'), 'DATA')
 selection.figures_dir = 'figures'
 
 selection_view = selection.duplicate()
-selection_view.min_phys = [-30, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-30, -7, -4.5] 
+selection_view.max_phys = [  0,  7,  4.5]
 
 selection_fl = selection.duplicate()
 selection_fl.min_phys = [-33, -15, -6.5]
@@ -123,7 +121,6 @@ selection_fl.max_phys = [ -5,  15,  6.5]
 # Figure export
 selection.figures_dir = 'figures'
 figure_name = 'figure12'
-
 
 from pypic.input_output import read_particle_dataframe
 particle_filename = 'ion_trajectories.h5'
@@ -169,21 +166,21 @@ layout = [['a', 'a'],
           ]
 plots = [
          dict(label='a', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
+              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=False, progress_bar=False),
          dict(label='b', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
+              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=False, progress_bar=False),
          dict(label='c', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
+              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=False, progress_bar=False),
          dict(label='d', cycle=cycle, species=1, field=None, vectors=None, vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
+              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=False, progress_bar=False),
          ]
 
 def plot_fieldline(ax, selection, center, alpha=None):
-    boundary_conditions = {'r_min': 3.,
+    boundary_conditions = {'r_min': 2.,
                            'r_max': 33.,
                            'lower_bound': selection.min_phys,
                            'upper_bound': selection.max_phys,
-                           'max_iter': 1e4,
+                           'max_iter': 2e4,
                            'verbose': False,
                            }
     fl = fieldline(r=center,
@@ -198,6 +195,7 @@ def plot_fieldline(ax, selection, center, alpha=None):
     if alpha is None:
         alpha = 0.99 if cycle < 160000 else 0.4
         alpha = 0.4 if cycle < 110000 else alpha
+    alpha = 1
     lc = fl.plot_fieldline(ax=ax,
                       color_key='bz', # 'b', 'bz', 'n', 'errors', 'markers'
                       # color='white', # single color
@@ -217,12 +215,15 @@ def plot_fieldline(ax, selection, center, alpha=None):
                       # arrow_scale=25,
                       # arrow_color='white',
                       arrow_color=None,
-                      arrow_alpha=0.6,
+                      arrow_alpha=0.7,
                       path_effects=True,
-                      path_effects_alpha=0.8,
-                      path_effects_lw=1.3,
-                      path_effects_color='white',
+                      path_effects_alpha=0.5,
+                      # path_effects_lw=1.3,
+                      path_effects_lw=0.5,
+                      # path_effects_lw=3.3,
+                      # path_effects_color='white',
                       path_effects_type='stroke',
+                      # path_effects_type='new-line',
                       )
     points = fl.r
 
@@ -235,7 +236,7 @@ particle_trace_opts = dict(cmap=cmap_particle_traces,
 field_plot_opts = dict(
                        contour=True,
                        contour_fill=True,
-                       contour_levels=10,
+                       contour_levels=30,
                        cmap=None,
                        norm=None,
                        alpha=0.9,
@@ -250,7 +251,7 @@ plot.configure_matplotlib(dark_mode, transparent)
 
 # Size of the figure
 fig, axes = plt.subplot_mosaic(layout,
-                               figsize=(12, 14),
+                               figsize=(16, 14),
                                per_subplot_kw={('a', 'b', 'c'): {'projection': '3d', 'computed_zorder': False}},
                                gridspec_kw={'height_ratios': [3, 2, 1],
                                             'wspace': 0.8, 'hspace': 0.1},
@@ -314,19 +315,19 @@ for p in plots:
                                  ],
                             key2=['energy'],
                             x_key='time',
-                            edgecolor='k',
+                            edgecolor=grid_color,
                             labels=[r'$\mathbf{E} \cdot {\hat{\mathbf{v}}}$',
                                     r'$\mathbf{E} \cdot {\hat{\mathbf{B}}}$',
                                     ],
                             color=colors,
-                            text_color='k',
+                            text_color=text_color,
                             fontsize=16,
                             legend=True,
                             clip_on=False,
                             normalize=False,
                             highlight=np.asarray(cycles_iter)*sim.dt_phys,
-                            ylim = [-7,7],
-                            ylim2 = [0,100],
+                            ylim = [-5,5],
+                            ylim2 = [0,60],
                             ylabel=r'[mV/m]',
                             ylabel2='Energy [keV]',
                             xlabel='Time [s]',
@@ -380,7 +381,7 @@ for p in plots:
         df0 = dfpick[dfpick['cycle'] <= cycle]
         last_pt = [df0['x'].iloc[-1], df0['y'].iloc[-1], df0['z'].iloc[-1]]
         selection.center_phys = last_pt
-        selection.delta_phys =  [8, 8, 0]
+        selection.delta_phys =  [9, 9, 0]
         selection.cycle = cycle
         selection_view.cycle = cycle
 
@@ -415,7 +416,7 @@ for p in plots:
             col = colored_line(ax,
                          df_history,
                          # c='energy',
-                         lw=3.2,
+                         lw=3.6,
                          ls='solid',
                          alpha=1.,
                          clip_on=False,
@@ -439,21 +440,21 @@ for p in plots:
                     )
 
             if p['label'] == 'a':
-                step = [0, 0, 1.5]
+                step = [0, 0, 2]
                 line_correction = [0, 0, -0.65]
             elif p['label'] == 'b':
-                step = [2.5, -3, 0]
+                step = [2, -2.5, 0]
                 line_correction = [0, 1.2, 0]
             elif p['label'] == 'c':
-                step = [0, 0, 6]
-                line_correction = [0, 0, -1.45]
+                step = [0, 0, 3]
+                line_correction = [0, 0, -1.1]
 
             # annotation text
             ax.text(df_history['x'].iloc[-1]+step[0], df_history['y'].iloc[-1]+step[1], df_history['z'].iloc[-1]+step[2],
                     f'{cycle*sim.dt_phys:.0f} s',
                     zdir=None,
                     color='white',
-                    fontsize=14,
+                    fontsize=16,
                     ha='center',
                     va='center',
                     bbox=dict(facecolor='k', alpha=0.3, edgecolor='w', lw=0.5,
@@ -479,14 +480,14 @@ for p in plots:
                        # mec='white',
                        mec=cout,
                        mew=0.7,
-                       ms=8, alpha=0.8, zorder=80)
+                       ms=10, alpha=0.8, zorder=80)
 
             plot.plot_intersections(ax,
                                df_history,
                                # selection=selection_view,
                                clip_on=False,
                                radius=0.15,
-                               alpha=0.1,
+                               alpha=0.2,
                                lw=1.3,
                                color='white',
                                z_intersect=0,
@@ -526,7 +527,7 @@ for p in plots:
             if p['label'] == 'c':
                 alpha = 0.3
             else:
-                alpha = 0.99
+                alpha = 0.9
             lc, _ = plot_fieldline(ax, selection_fl, seed_point, alpha=alpha)
 
         if scalar_field is not None and cycle in cycles_plot_field:
@@ -546,6 +547,7 @@ axes_opts_phys = dict(
                       x_lines=[-30, -25, -20, -15, -10],
                       y_lines=[-5, 0, 5],
                       labels=True,
+                      fontsize=16,
                       minor_labels=True,
                       dark_mode=dark_mode,
                       transparent=True,
@@ -572,19 +574,19 @@ axes_opts_other = dict(
                    )
 
 axes_opts_phys['zoom'] = 0.45
-selection_view.min_phys = [-32, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-28, -7, -4.5] 
+selection_view.max_phys = [  0,  7,  4.5]
 plot.configure_axes(axes['a'], selection_view, **axes_opts_phys)
 axes_opts_phys['zoom'] = 0.6
 axes_opts_phys['z_label'] = None
-selection_view.min_phys = [-32, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-30, -7, -4.5] 
+selection_view.max_phys = [  0,  7,  4.5]
 plot.configure_axes(axes['b'], selection_view, **axes_opts_phys)
-axes_opts_phys['zoom'] = 0.67
+axes_opts_phys['zoom'] = 0.6
 axes_opts_phys['y_lines'] = []
-axes_opts_phys['x_lines'] = [-30, -25, -20, -15, -10]
+axes_opts_phys['x_lines'] = [-25, -20, -15, -10]
 axes_opts_phys['y_label'] = None
-selection_view.min_phys = [-35, -7, -4.5] 
+selection_view.min_phys = [-25, -7, -4.5] 
 selection_view.max_phys = [  0,  7,  4.5]
 plot.configure_axes(axes['c'], selection_view, **axes_opts_phys)
 
@@ -615,10 +617,10 @@ def update_cbar(ax, opts):
 particle_trace_opts['label'] = 'Energy [keV]'
 particle_trace_opts['margin'] = (-0.4, 0.05)
 particle_trace_opts['ticks'] = (0, 20, 40, 60, 80, 100)
-cbar_field = update_cbar(axes['a'], particle_trace_opts)
+# cbar_field = update_cbar(axes['a'], particle_trace_opts)
 field_plot_opts['margin'] = (0.2, 0.05)
 field_plot_opts['ticks'] = (-20,-10,0,10,20)
-cbar_field = update_cbar(axes['a'], field_plot_opts)
+# cbar_field = update_cbar(axes['a'], field_plot_opts)
 
 # fig.align_ylabels([axes['a'], axes['b'], axes['c']])
 
@@ -628,7 +630,7 @@ if show_only:
     plt.close()
 else:
     # fig.tight_layout()
-    dpi = 300 if publication_quality else 200
+    dpi = 400 if publication_quality else 200
     if not os.path.exists(selection.figures_dir):
         os.makedirs(selection.figures_dir)
     # savepath = os.path.join(selection.figures_dir, f'{figure_name}.png')
@@ -639,5 +641,5 @@ else:
                 bbox_inches='tight',
                 pad_inches=0.05, #default 0.1
                 # facecolor=ax.get_facecolor(),
-                # transparent=transparent,
+                transparent=transparent,
                 )

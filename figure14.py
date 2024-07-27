@@ -13,8 +13,8 @@ from pypic.fieldline import fieldline
 # --- PLOT SETTINGS
 show_only = False
 publication_quality = True
-dark_mode = True
-transparent = True
+dark_mode = False
+transparent = False
 plot_progress_bar = True
 LaTeX = True
 clip_on = False
@@ -84,23 +84,24 @@ q_picks = [
 
 # --- Chosen ion IDs for the 2024 ring current paper
 # i_pick = 6 # ion in Figure 11
-i_pick = 15 # ion in Figure 12
-# i_pick = 29 # ion in Figure 13 (df_paper_205k_all_124368_fields.h5)
+# i_pick = 15 # ion in Figure 12
+i_pick = 29 # ion in Figure 13 (df_paper_205k_all_124368_fields.h5)
 
 
 sim = pypic.ipic3D()
-# cycle = 10000
-cycle = 100000 # Figure 9 Panels c,d
-cycle = 155000 # Figure 9 Panels e,f
 # cycles_iter = [40000, 151500, 202500] # Ion 6 *
 # cycles_plot_field = [40000, 151500] # Ion 6 *
 
-cycles_iter = [76000, 138000, 165000, 202500] # Ion 15 *
-cycles_plot_field = [76000, 138000, 165000] # Ion 15 *
-# cycles_iter = [106000, 142500, 202500] # Ion 29 *
-# cycles_iter = [142500, 202500] # Ion 29 *
+# cycles_iter = [76000, 138000, 165000, 202500] # Ion 15 *
+# cycles_plot_field = [76000, 138000, 165000] # Ion 15 *
 
-cycle = 202500 # Figure 9 Panels g,h
+cycles_iter = [106000, 142500, 202500] # Ion 29 *
+cycles_plot_field = [142500]
+
+cycles_iter = [124000, 142500, 202500] # Ion 29 *
+cycles_plot_field = [124000]
+
+cycle = 202500
 selection = pypic.Selection(sim,
                             species = 1,
                             cycle = cycle,
@@ -113,8 +114,8 @@ selection.data_dir = os.path.join(os.path.expanduser('~'), 'DATA')
 selection.figures_dir = 'figures'
 
 selection_view = selection.duplicate()
-selection_view.min_phys = [-30, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-30, -7, -2.5] 
+selection_view.max_phys = [  0,  7,  2.5]
 
 selection_fl = selection.duplicate()
 selection_fl.min_phys = [-33, -15, -6.5]
@@ -122,7 +123,7 @@ selection_fl.max_phys = [ -5,  15,  6.5]
 
 # Figure export
 selection.figures_dir = 'figures'
-figure_name = 'figure13'
+figure_name = 'figure14'
 
 
 from pypic.input_output import read_particle_dataframe
@@ -168,22 +169,22 @@ layout = [['a', 'a'],
           ['d', 'd'],
           ]
 plots = [
-         dict(label='a', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=True),
-         dict(label='b', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
+         dict(label='a', cycle=cycle, species=1, field='bz_sub_bzdip', vectors=None, vector_color=None, cbar=True, legend=True,
               scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
-         dict(label='c', cycle=cycle, species=1, field='bz', vectors=None, vector_color=None, cbar=True, legend=True,
+         dict(label='b', cycle=cycle, species=1, field='bz_sub_bzdip', vectors=None, vector_color=None, cbar=True, legend=True,
+              scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
+         dict(label='c', cycle=cycle, species=1, field='bz_sub_bzdip', vectors=None, vector_color=None, cbar=True, legend=True,
               scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
          dict(label='d', cycle=cycle, species=1, field=None, vectors=None, vector_color=None, cbar=True, legend=True,
               scalar_cmap=cmap, vector_cmap=None, vector_label=None, annotation=True, progress_bar=False),
          ]
 
-def plot_fieldline(ax, selection, center, alpha=None):
+def plot_fieldline(ax, selection, center, alpha=None, color=None):
     boundary_conditions = {'r_min': 2.,
                            'r_max': 33.,
                            'lower_bound': selection.min_phys,
                            'upper_bound': selection.max_phys,
-                           'max_iter': 2e4,
+                           'max_iter': 1e4,
                            'verbose': False,
                            }
     fl = fieldline(r=center,
@@ -196,13 +197,11 @@ def plot_fieldline(ax, selection, center, alpha=None):
     fl.trace()
     color = 'white' if dark_mode else 'black'
     if alpha is None:
-        # alpha = 0.99 if cycle < 160000 else 0.4
-        # alpha = 0.4 if cycle < 110000 else alpha
-        # alpha = 1
-        alpha = 0.4 if cycle > 110000 else 1
+        alpha = 0.99 if cycle < 160000 else 0.4
+        alpha = 0.4 if cycle < 110000 else alpha
     lc = fl.plot_fieldline(ax=ax,
                       color_key='bz', # 'b', 'bz', 'n', 'errors', 'markers'
-                      # color='white', # single color
+                      # color='k', # single color
                       # color=fl_color, # single color
                       cmap=cmap, # overrides default colors
                       # norm=norm, # overrides default normalization
@@ -252,7 +251,7 @@ plot.configure_matplotlib(dark_mode, transparent)
 
 # Size of the figure
 fig, axes = plt.subplot_mosaic(layout,
-                               figsize=(15, 14),
+                               figsize=(11.8, 14),
                                per_subplot_kw={('a', 'b', 'c'): {'projection': '3d', 'computed_zorder': False}},
                                gridspec_kw={'height_ratios': [3, 2, 1],
                                             'wspace': 0.8, 'hspace': 0.1},
@@ -271,6 +270,7 @@ for p in plots:
     annotate = p.get('annotation', False)
     if annotate:
         offset=(-0.28, 0)
+        # offset=(-0.6, 0)
         if p['label'] == 'a':
             offset=(-0.6,-0.01)
         if p['label'] == 'd':
@@ -321,7 +321,7 @@ for p in plots:
                                     r'$\mathbf{E} \cdot {\hat{\mathbf{B}}}$',
                                     ],
                             color=colors,
-                            text_color='w',
+                            text_color='k',
                             fontsize=16,
                             legend=True,
                             clip_on=False,
@@ -368,7 +368,7 @@ for p in plots:
 
     if p['label'] in ['a']:
         ax.set_proj_type('persp', focal_length=0.8)
-        ax.view_init(elev=30, azim=-45)
+        ax.view_init(elev=22, azim=-30)
     if p['label'] in ['b']:
         ax.set_proj_type('persp', focal_length=0.8)
         ax.view_init(elev=90, azim=-90, roll=0) #xy
@@ -382,7 +382,7 @@ for p in plots:
         df0 = dfpick[dfpick['cycle'] <= cycle]
         last_pt = [df0['x'].iloc[-1], df0['y'].iloc[-1], df0['z'].iloc[-1]]
         selection.center_phys = last_pt
-        selection.delta_phys =  [8, 8, 0]
+        selection.delta_phys =  [12, 12, 12]
         selection.cycle = cycle
         selection_view.cycle = cycle
 
@@ -396,8 +396,11 @@ for p in plots:
         # --- PLOT FIELD
         from pypic.calculate import calculate_fields, calculate_quick_3Dfields
         # selection.field = None
-        selection.f_B = None
+        # selection.f_B = None
         calculate_quick_3Dfields(selection)
+        # selection.f_B = None
+        # calculate_fields(selection)
+        selection.calculate(quick=False)
 
         # selection.calculate(quick=True)
         scalar_field = selection.get_field(p['field'])
@@ -417,7 +420,20 @@ for p in plots:
             col = colored_line(ax,
                          df_history,
                          # c='energy',
-                         lw=3.6,
+                         color='white',
+                         lw=4,
+                         ls='solid',
+                         alpha=1.,
+                         clip_on=False,
+                         # cmap=cmap_particle_traces,
+                         # norm=norm_particle_traces,
+                         zdir='y',
+                         zorder=100,
+                        )
+            col = colored_line(ax,
+                         df_history,
+                         # c='energy',
+                         lw=3.8,
                          ls='solid',
                          alpha=1.,
                          clip_on=False,
@@ -441,14 +457,14 @@ for p in plots:
                     )
 
             if p['label'] == 'a':
-                step = [0, 0, 2]
-                line_correction = [0, 0, -0.65]
+                step = [0, 0, 1.1]
+                line_correction = [0, 0, -0.32]
             elif p['label'] == 'b':
-                step = [2.5, -3, 0]
-                line_correction = [0, 1.2, 0]
+                step = [2.5, -2, 0]
+                line_correction = [0, .5, 0]
             elif p['label'] == 'c':
                 step = [0, 0, 6]
-                line_correction = [0, 0, -1.45]
+                line_correction = [0, 0, -.8]
 
             # annotation text
             ax.text(df_history['x'].iloc[-1]+step[0], df_history['y'].iloc[-1]+step[1], df_history['z'].iloc[-1]+step[2],
@@ -460,7 +476,7 @@ for p in plots:
                     va='center',
                     bbox=dict(facecolor='k', alpha=0.3, edgecolor='w', lw=0.5,
                               boxstyle='round,pad=0.5'),
-                    zorder=100,
+                    zorder=150,
                     clip_on=False,
                     )
             # draw connecting line
@@ -528,11 +544,9 @@ for p in plots:
             if p['label'] == 'c':
                 alpha = 0.3
             else:
-                if selection.cycle > 150000:
-                    alpha = 0.2
-                else:
-                    alpha = 1
-            lc, _ = plot_fieldline(ax, selection_fl, seed_point, alpha=alpha)
+                # alpha = 0.99
+                alpha = 0.3
+            lc, _ = plot_fieldline(ax, selection_fl, seed_point, alpha)
 
         if scalar_field is not None and cycle in cycles_plot_field:
             field_plot_opts['cmap'] = cmap_scalar
@@ -551,11 +565,11 @@ axes_opts_phys = dict(
                       x_lines=[-30, -25, -20, -15, -10],
                       y_lines=[-5, 0, 5],
                       labels=True,
-                      fontsize = 16,
+                      fontsize=16,
                       minor_labels=True,
                       dark_mode=dark_mode,
                       transparent=True,
-                      alpha=0.6,
+                      alpha=0.9,
                       title=None,
                       x_label=r'$\text{X}$',
                       y_label=r'$\text{Y}$',
@@ -578,21 +592,23 @@ axes_opts_other = dict(
                    )
 
 axes_opts_phys['zoom'] = 0.45
-selection_view.min_phys = [-32, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-15, -5, -2.5] 
+selection_view.max_phys = [  0,  8,  2.5]
 plot.configure_axes(axes['a'], selection_view, **axes_opts_phys)
-axes_opts_phys['zoom'] = 0.6
+axes_opts_phys['zoom'] = 0.8
 axes_opts_phys['z_label'] = None
-selection_view.min_phys = [-32, -8, -4.5] 
-selection_view.max_phys = [  0,  8,  4.5]
+selection_view.min_phys = [-15,  0, -2.5] 
+selection_view.max_phys = [ -5,  6,  2.5]
 plot.configure_axes(axes['b'], selection_view, **axes_opts_phys)
 axes_opts_phys['zoom'] = 0.67
 axes_opts_phys['y_lines'] = []
-axes_opts_phys['x_lines'] = [-30, -25, -20, -15, -10]
+axes_opts_phys['x_lines'] = [-30, -25, -20, -15, -10, -5]
 axes_opts_phys['y_label'] = None
-selection_view.min_phys = [-35, -7, -4.5] 
+selection_view.min_phys = [-15, -7, -4.5] 
 selection_view.max_phys = [  0,  7,  4.5]
 plot.configure_axes(axes['c'], selection_view, **axes_opts_phys)
+# axes['a'].view_init(elev=22, azim=-45)
+# plot.configure_axes(axes['c'], selection_view, **axes_opts_other)
 
 def update_cbar(ax, opts):
     cbar = plot.colorbar(ax,
@@ -621,10 +637,10 @@ def update_cbar(ax, opts):
 particle_trace_opts['label'] = 'Energy [keV]'
 particle_trace_opts['margin'] = (-0.4, 0.05)
 particle_trace_opts['ticks'] = (0, 20, 40, 60, 80, 100)
-# cbar_field = update_cbar(axes['a'], particle_trace_opts)
+cbar_field = update_cbar(axes['a'], particle_trace_opts)
 field_plot_opts['margin'] = (0.2, 0.05)
 field_plot_opts['ticks'] = (-20,-10,0,10,20)
-# cbar_field = update_cbar(axes['a'], field_plot_opts)
+cbar_field = update_cbar(axes['a'], field_plot_opts)
 
 # fig.align_ylabels([axes['a'], axes['b'], axes['c']])
 
@@ -643,7 +659,8 @@ else:
     plt.savefig(savepath,
                 dpi=dpi,
                 bbox_inches='tight',
-                pad_inches=0.05, #default 0.1
+                pad_inches=0.1, #default 0.1
+                # pad_inches=0.05, #default 0.1
                 # facecolor=ax.get_facecolor(),
                 transparent=transparent,
                 )
