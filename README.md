@@ -8,7 +8,7 @@
 * `pypic/` - analysis/plotting code
 * `figures/` - default figure location
 * `DATA/` - default data location
-* `Figure[1-13].py` - scripts for the figures
+* `Figure[1-14].py` - scripts for the figures
 * `configs/` - configuration file for [`iPic3D`](https://github.com/CmPA/iPic3D) (EcSIM).
 
 ## Setting up a Virtual Environment
