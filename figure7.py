@@ -29,31 +29,31 @@ selection = pypic.Selection(sim,
 # --- LOAD AND CALCULATE DATA
 selection.data_dir = os.path.join(os.path.expanduser('~'), 'DATA')
 selection.figures_dir = 'figures'
-selection.calculate()
 
 # Figure export
 selection.figures_dir = 'figures'
 figure_name = 'figure7'
 
 import colorcet as cc
-cmap = mpl.colormaps['rainbow_white']
+cmap = mpl.colormaps['rainbow']
+# cmap = mpl.colormaps['turbo']
+cmap_turbo = mpl.colormaps['turbo']
+# cmap = mpl.colormaps['turbo']
+# cmap = mpl.colormaps['rainbow_white']
+# cmap = cl.bkr_extra_cmap
 
+# layout = [['a', 'b'],
+          # ['c', 'd'],
+          # ['e', 'f']]
 layout = [['a', 'b'],
-          ['c', 'd'],
-          ['e', 'f']]
-plots = [
-         dict(label='a', cycle=100000, species=1, field='EFx', vectors=['EFx', 'EFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{EF}_{\text{ion}}$', scalar_label=r'$\text{EF}_{x,\text{ion}}$'),
-         dict(label='c', cycle=100000, species=1, field='KEFx', vectors=['KEFx', 'KEFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{KEF}_{\text{ion}}$', scalar_label=r'$\text{KEF}_{x,\text{ion}}$'),
-         dict(label='e', cycle=100000, species=1, field='HFx', vectors=['HFx', 'HFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{HF}^+_{\text{ion}}$', scalar_label=r'$\text{HF}_{x, \text{ion}}^+$'),
-         dict(label='b', cycle=202500, species=1, field='EFx', vectors=['EFx', 'EFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{EF}_{\text{ion}}$', scalar_label=r'$\text{EF}_{x, \text{ion}}$'),
-         dict(label='d', cycle=202500, species=1, field='KEFx', vectors=['KEFx', 'KEFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{KEF}_{\text{ion}}$', scalar_label=r'$\text{KEF}_{x, \text{ion}}$'),
-         dict(label='f', cycle=202500, species=1, field='HFx', vectors=['HFx', 'HFy'], vector_color=None, cbar=True, legend=True,
-              scalar_cmap=cmap, vector_cmap=None, vector_label=r'$\text{HF}^+_{\text{ion}}$', scalar_label=r'$\text{HF}_{x, \text{ion}}^+$'),
+          ['c', 'c']]
+# 'j0_over_j' ' j0dote', 'jdote', 'T_over_T0'
+plots = [dict(label='a', cycle=202500, species=1, field='j0', vectors=['jx0', 'jy0'], vector_color=None, cbar=True, legend=True,
+              scalar_cmap=cmap, vector_cmap=cc.cm.fire, vector_label=r'$\mathbf{j}$ [nA/m$^2$]'),
+         dict(label='b', cycle=202500, species=1, field='j', vectors=['jx', 'jy'], vector_color=None, cbar=True, legend=True,
+              scalar_cmap=cmap, vector_cmap=cc.cm.fire, vector_label=r'$\mathbf{j}$ [nA/m$^2$]'),
+         dict(label='c', cycle=202500, species=1, field='j0_over_j', vectors=['jtx', 'jty'], vector_color=None, cbar=True, legend=True,
+              scalar_cmap=cmap, vector_cmap=cc.cm.fire, vector_label=r'$\mathbf{j}$ [nA/m$^2$]'),
          ]
 
 field_plot_opts = dict(
@@ -70,10 +70,10 @@ field_plot_opts = dict(
                        )
 
 vector_plot_opts = dict(
-                        density=0.9, # float or (float, float)
+                        density=1.2, # float or (float, float)
                         lw=2, # linewidth of streamlines
                         lw_min=0.2,
-                        lw_max=3,
+                        lw_max=2,
                         # stream_seed_points=stream_seed_points , # array of points to seed streamlines
                         broken_streamlines=True,
                         smooth_field=True,
@@ -81,37 +81,41 @@ vector_plot_opts = dict(
                         # seed_point_color='blue',
                         arrowstyle='-|>',
                         # arrowstyle='->',
-                        # arrowstyle='-',
-                        arrowsize=1.4,
-                        average_cells=4,
+                        arrowsize=1.5,
+                        average_cells=5,
                         zorder=0,
                         # patheffects_color='w',
-                        patheffects_alpha=0.2,
-                        color='k',
+                        patheffects_alpha=0.5,
+                        patheffects_lw=1.,
+                        color='w',
                         cmap=None,
                         norm=None,
-                        alpha=0.6,
+                        alpha=0.8,
                         cbar=True,
                         cbar_loc='bottom left',
-                        cbar_alpha=0.8,
+                        cbar_alpha=0.9,
                         label=None,
                         dark_mode=dark_mode,
-                        minlength=0.08,
-                        maxlength=1,
+                        minlength=0.11,
+                        maxlength=1.5,
                         )
 
 plot.configure_matplotlib(dark_mode, transparent)
 
 # Size of the figure
 fig, axes = plt.subplot_mosaic(layout,
-                               figsize=(10.5, 10),
+                               # figsize=(10.9, 10.5),
+                               figsize=(7.9, 7.5),
                                constrained_layout=True,
-                               sharex=True,
-                               sharey=True,
+                               # height_ratios=[2, 0.8, 0.8],
+                               height_ratios=[1, 2],
+                               # sharex=True,
+                               # sharey=True,
                                )
 
 # Set small padding between subplots
-fig.set_constrained_layout_pads(w_pad=-0./72., h_pad=-0./72., hspace=0, wspace=0)
+# fig.set_constrained_layout_pads(w_pad=-0./72., h_pad=-0./72., hspace=0, wspace=0)
+# fig.set_constrained_layout_pads(w_pad=-0./72., h_pad=-0./72., hspace=0, wspace=0)
 
 # Annotate axes with axes labels
 for label, ax in axes.items():
@@ -170,11 +174,34 @@ for p in plots:
     vector_units, _, vector_range = units.info(p['vectors'], selection, **opt)
 
     scalar_label = p.get('scalar_label', scalar_label)
-    if scalar_units not in [None, ''] and scalar_label is not None:
+    if p['label'] in ['a']:
+        # scalar_label = r'$\mathbf{j_e} \cdot \mathbf{E}$'
+        scalar_label = r'$\mathbf{j_e}$'
+    # else:
+    #     scalar_label = r'$\mathbf{j_i} \cdot \mathbf{E}$'
+    if p['label'] in ['b']:
+        scalar_label = r'$\mathbf{j_i}$'
+    if p['label'] in ['c']:
+        scalar_label = r'$\mathbf{j_e}/\mathbf{j_i}$'
+
+    if scalar_units is not None and scalar_label is not None and scalar_units != '':
         scalar_label += f' [{scalar_units}]'
-    scalar_range = [-2, 2]
+    # if p['label'] in ['a', 'b']:
+        # scalar_range = [-5, 5]
+    # scalar_range = [0, 4]
+    # if p['label'] in ['b']:
+        # scalar_range = [0, 2]
+    # scalar_range = [-1e-9, 1e-9]
+    # scalar_range = [-20, 20] # for j0dote
+    # scalar_range = [0, 10]
+    if p['label'] in ['a', 'b']:
+        scalar_range = [0, 6]
+    if p['label'] in ['c']:
+        scalar_range = [0, 2]
     vector_pretty_name = units.pretty_name(p['vectors'], LaTeX=LaTeX)
     vector_range[0] = 0
+    if p['label'] in ['e', 'f']:
+        vector_range = [0, 3]
     vector_scale = vector_range[1]/2
     vector_label = p['vector_label']
 
@@ -206,8 +233,22 @@ for p in plots:
         vector_plot_opts['cmap'] = cmap_vector
         vector_plot_opts['norm'] = norm_vector
         vector_plot_opts['label'] = vector_label
-        vector_plot_opts['broken_streamlines'] = True
-        vector_plot_opts['cbar_alpha'] = 0.9
+        vector_plot_opts['color'] = 'k' if p['label'] in ['c', 'd'] else 'w'
+        if p['label'] in ['a', 'b', 'e', 'f']:
+            vector_plot_opts['dark_mode'] = True
+            vector_plot_opts['cbar_alpha'] = 0.8
+        else:
+            vector_plot_opts['dark_mode'] = False
+            vector_plot_opts['cbar_alpha'] = 0.8
+        if p['label'] in ['c']:
+            vector_plot_opts['lw'] = 6
+            vector_plot_opts['alpha'] = 0.7
+            vector_plot_opts['density'] = 1.5
+            #             density=1.2, # float or (float, float)
+            #             lw=2, # linewidth of streamlines
+            # vector_plot_opts['cbar'] = False
+            # vector_plot_opts['cbar_loc'] = None
+        # color = [0,0,0,0.3]
         im_stream = plot.streamlines(ax,
                                      vector_field,
                                      selection, # selection object for bins and limits
@@ -215,6 +256,21 @@ for p in plots:
                                      **vector_plot_opts,
                                      )
 
+        # if p['label'] in ['c', 'd']:
+        #     from pypic.fields import find_dipolarizations
+        #     shapes = find_dipolarizations(ax, selection,
+        #                                   'bz',
+        #                                   min_length=14,
+        #                                   dbz=2,
+        #                                   x_lims=[-20, -10],
+        #                                   )
+        #     for shape in shapes:
+        #         plot.shape(ax, selection, shape, dark_mode=True,
+        #                    cmap = 'binary', alpha = 0.7, smooth_std=1)
+        # if p['label'] in ['c', 'd']:
+        #     vx = vector_field[0]
+        #     from pypic.fields import find_reversals
+        #     find_reversals(ax, selection, vx, color='w', first_only=False)
 
 axes_opts_phys = dict(draw_radii=[5,8],
                  planet=True,
@@ -259,6 +315,18 @@ for p in plots:
     last_col = col == layout_shape[1]-1
     first_row = row == 0
     first_col = col == 0
+    # print(f' first_col = {first_col}, last_row = {last_row}')
+    # print(f' size of first row = {np.size(first_row)}')
+    if np.size(first_row) > 1:
+        first_row = first_row[0]
+    if np.size(first_col) > 1:
+        first_col = first_col[0]
+    if np.size(last_row) > 1:
+        last_row = last_row[-1]
+    if np.size(last_col) > 1:
+        last_col = last_col[-1]
+
+    # if np.
     if not first_col and not last_row:
         opts['tick_loc'] = []
         opts['label_loc'] = []
@@ -281,14 +349,13 @@ for p in plots:
 # axes_opts_phys['label_loc'] = ['left', 'bottom']
 # plot.configure_axes(axes['a'], selection, **axes_opts_phys)
 
-
-fig.align_ylabels([axes['a'], axes['b'], axes['c']])
+# fig.align_ylabels([axes['a'], axes['b'], axes['c']])
 
 if plot_progress_bar:
     # Automatically plot progress bar at the top of the first row
     labels = np.array(layout).flatten()
     # find the axes in the first row
-    progress_axes = [l for l in labels if np.where(np.array(layout) == l)[0] == 0]
+    progress_axes = [l for l in labels if np.where(np.any(np.array(layout) == l))[0] == 0]
     for p in plots:
         selection = p.get('selection', selection)
         cycle = selection.cycle
